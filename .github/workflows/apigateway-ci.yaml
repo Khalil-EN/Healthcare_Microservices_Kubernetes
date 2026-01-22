@@ -1,19 +1,19 @@
-name: Frontend CI
+name: Apigateway CI
 
 on:
   push:
     branches: [main, develop]
     paths:
-      - 'frontend/**'
-      - '.github/workflows/frontend-ci.yaml'
+      - 'apigateway/**'
+      - '.github/workflows/apigateway-ci.yaml'
   pull_request:
     branches: [main]
     paths:
-      - 'frontend/**'
+      - 'apigateway/**'
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/frontend
+  IMAGE_NAME: ${{ github.repository }}/apigateway
 
 jobs:
   build-and-push:
@@ -54,7 +54,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend
+          context: ./apigateway
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -68,10 +68,10 @@ jobs:
           IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | grep -oP 'sha-\K[a-f0-9]+' | head -n1)
           
           # Update the deployment file
-          sed -i "s|image: .*frontend:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${IMAGE_TAG}|g" k8s-global/apigateway/apigateway-deployment.yaml
+          sed -i "s|image: .*apigateway:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${IMAGE_TAG}|g" k8s-global/apigateway/apigateway-deployment.yaml
           
           # Commit changes
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add k8s-global/apigateway/apigateway-deployment.yaml
-          git diff --staged --quiet || git commit -m "Update frontend image to sha-${IMAGE_TAG}" && git push
+          git diff --staged --quiet || git commit -m "Update apigateway image to sha-${IMAGE_TAG}" && git push
