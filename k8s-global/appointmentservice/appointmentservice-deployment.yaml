@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: appointmentservice
+  name: appointmentservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appointmentservice
+  template:
+    metadata:
+      labels:
+        app: appointmentservice
+    spec:
+      containers:
+        - env:
+            - name: CONSUL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: consul-config
+                  key: consul-name
+            - name: CONSUL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: consul-config
+                  key: consul-port
+            - name: KAFKA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-config
+                  key: kafka-name
+            - name: KAFKA_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-config
+                  key: kafka-port
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-config
+                  key: mongo-hostname
+            - name: MONGO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-config
+                  key: mongo-port
+            - name: MONGO_PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: mongo-root-password
+            - name: MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: mongo-root-username
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              valueFrom:
+                  configMapKeyRef:
+                    name: otel-env-config
+                    key: otel-exporter-otlp-endpoint
+            - name: OTEL_SERVICE_NAME
+              value: appointmentservice
+              
+          image: localhost:5000/appointmentservice
+          name: appointmentservice
+          ports:
+            - containerPort: 4001
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4001
+            initialDelaySeconds: 20
+            periodSeconds: 10
+      restartPolicy: Always

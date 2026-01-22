@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-config
+  namespace: tracing
+data:
+  otel-config.yaml: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+
+    processors:
+      batch:
+        timeout: 10s
+        send_batch_size: 1024
+      
+      # Processor pour générer des métriques à partir des spans
+      spanmetrics:
+        metrics_exporter: prometheus
+        latency_histogram_buckets: [2ms, 4ms, 6ms, 8ms, 10ms, 50ms, 100ms, 200ms, 400ms, 800ms, 1s, 1400ms, 2s, 5s, 10s, 15s]
+        dimensions:
+          - name: http.method
+          - name: http.status_code
+        dimensions_cache_size: 1000
+        aggregation_temporality: "AGGREGATION_TEMPORALITY_CUMULATIVE"
+
+    exporters:
+      # Export vers Jaeger (traces)
+      otlp:
+        endpoint: jaeger.tracing.svc.cluster.local:4317
+        tls:
+          insecure: true
+      
+      # Export des métriques vers Prometheus
+      prometheus:
+        endpoint: 0.0.0.0:8889
+        namespace: traces
+      
+      # Logging pour debug
+      logging:
+        verbosity: detailed
+
+    service:
+      pipelines:
+        # Pipeline pour les traces
+        traces:
+          receivers: [otlp]
+          processors: [spanmetrics, batch]
+          exporters: [otlp, logging]
+        
+        # Pipeline pour les métriques générées depuis les traces
+        metrics:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [prometheus]

@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: discord-routing
+  namespace: monitoring
+  labels:
+    alertmanagerConfig: discord
+spec:
+  route:
+    receiver: discord-critical
+    matchers:
+      - name: severity
+        matchType: =~
+        value: "warning|critical"
+    continue: false
+  receivers:
+    - name: discord-critical
+      webhookConfigs:
+        - url: http://alertmanager-discord-bridge.monitoring.svc.cluster.local:9094/webhook
+          sendResolved: true

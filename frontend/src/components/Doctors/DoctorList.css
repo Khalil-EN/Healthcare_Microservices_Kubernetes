@@ -1,0 +1,148 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+
+.doctor-list-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 30px;
+  background: linear-gradient(135deg, #e2ffec, #84f09b);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  min-height: 500px; 
+  padding-bottom: 50px;
+  margin-top: 20px;
+}
+
+h2 {
+  text-align: center;
+  color: #4CAF50;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.doctor-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.doctor-item {
+  background-color: #f9f9f9;
+  padding: 20px;
+  margin: 15px 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.doctor-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.doctor-info {
+  flex: 1;
+}
+
+.doctor-info h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.25rem;
+}
+
+.doctor-actions {
+  display: flex;
+  gap: 15px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+.btn-primary {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #45a049;
+}
+
+.btn-warning {
+  background-color: #f0ad4e;
+  color: white;
+}
+
+.btn-warning:hover {
+  background-color: #ec971f;
+}
+
+.btn-danger {
+  background-color: #d9534f;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c9302c;
+}
+
+
+@media (max-width: 768px) {
+  .doctor-list-container {
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+  }
+
+  .doctor-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .doctor-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+
+.doctor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-btn {
+  background-color: #2ecc71; 
+}
+
+.add-btn:hover {
+  background-color: #27ae60;
+  transform: translateY(-2px);
+}
+
+.add-btn:active {
+  background-color: #1e8449;
+  transform: translateY(1px);
+}

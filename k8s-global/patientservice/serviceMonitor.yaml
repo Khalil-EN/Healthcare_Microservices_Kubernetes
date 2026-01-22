@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: patientservice-monitor
+  labels:
+    release: monitoring  # must match the Helm release name
+spec:
+  selector:
+    matchLabels:
+      app: patientservice
+  endpoints:
+    - port: "4002"  # optional if port name is set in the service
+      targetPort: 4002
+      path: /metrics
+      interval: 15s
+  namespaceSelector:
+    matchNames:
+      - default

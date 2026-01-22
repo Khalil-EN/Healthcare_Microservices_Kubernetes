@@ -1,0 +1,138 @@
+.patient-list-container {
+  max-width: 900px;
+  margin: 50px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+}
+
+h2 {
+  color: #2c3e50;
+  font-size: 2rem;
+  margin-bottom: 40px;
+  font-weight: 600;
+}
+
+.patient-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.patient-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background: #f9f9f9;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.patient-item:hover {
+  background-color: #f4f4f4;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.patient-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-right: 300px;
+}
+
+.patient-info strong {
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.patient-info span {
+  color: #7f8c8d;
+  font-size: 0.95rem;
+  margin-top: 5px;
+}
+
+
+.patient-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0; 
+}
+
+
+.patient-actions button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+}
+
+
+.view-btn {
+  background-color: #3498db;
+  color: white;
+}
+
+.view-btn:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+.update-btn {
+  background-color: #f39c12;
+  color: white;
+}
+
+.update-btn:hover {
+  background-color: #e67e22;
+  transform: translateY(-2px);
+}
+
+
+.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+}
+
+
+.patient-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-btn {
+  background-color: #2ecc71; 
+}
+
+.add-btn:hover {
+  background-color: #27ae60;
+  transform: translateY(-2px);
+}
+
+.add-btn:active {
+  background-color: #1e8449;
+  transform: translateY(1px);
+}

@@ -1,0 +1,37 @@
+.patient-detail-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .patient-detail-title {
+    text-align: center;
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  
+  .patient-detail-info {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .patient-detail-info p {
+    margin: 8px 0;
+    line-height: 1.6;
+  }
+  
+  .patient-detail-info strong {
+    color: #333;
+    font-weight: 600;
+  }
+  
+  .patient-detail-info p:last-child {
+    margin-bottom: 0;
+  }
+  

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: appointmentservice
+  name: appointmentservice
+spec:
+  ports:
+    - name: "4001"
+      port: 4001
+      targetPort: 4001
+  selector:
+    app: appointmentservice

@@ -1,0 +1,127 @@
+.appointment-list {
+  margin: 20px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  max-width: 1200px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.appointment-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.appointment-table th,
+.appointment-table td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 1rem;
+}
+
+.appointment-table th {
+  background-color: #f8f8f8;
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.appointment-table tr:hover {
+  background-color: #fafafa;
+}
+
+.appointment-table td {
+  color: #555;
+  font-weight: 400;
+}
+
+.appointment-table td .action-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start; 
+}
+
+button,
+a {
+  padding: 10px 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  text-decoration: none;
+  color: white;
+  display: inline-block;
+}
+
+.view-btn {
+  background-color: #3498db; 
+}
+
+.view-btn:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+.view-btn:active {
+  background-color: #1d6fa5;
+  transform: translateY(1px);
+}
+
+.edit-btn {
+  background-color: #f39c12; 
+}
+
+.edit-btn:hover {
+  background-color: #e67e22;
+  transform: translateY(-2px);
+}
+
+.edit-btn:active {
+  background-color: #d35400;
+  transform: translateY(1px);
+}
+
+.delete-btn {
+  background-color: #e74c3c; 
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+}
+
+.delete-btn:active {
+  background-color: #a93226;
+  transform: translateY(1px);
+}
+
+button:focus,
+a:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5); 
+}
+
+.appointment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-btn {
+  background-color: #2ecc71;
+}
+
+.add-btn:hover {
+  background-color: #27ae60;
+  transform: translateY(-2px);
+}
+
+.add-btn:active {
+  background-color: #1e8449;
+  transform: translateY(1px);
+}

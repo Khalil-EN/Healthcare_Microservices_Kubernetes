@@ -1,0 +1,48 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: healthcare-microservices-alerts
+  namespace: monitoring
+  labels:
+    app: kube-prometheus-stack
+    release: monitoring
+spec:
+  groups:
+    - name: healthcare_microservices
+      interval: 30s
+      rules:
+        - alert: ServiceDown
+          expr: |
+            kube_deployment_status_replicas_available{deployment=~"apigateway|doctorservice|patientservice|appointmentservice"} == 0
+          for: 1m
+          labels:
+            severity: critical
+            team: platform
+            alertnamespace: monitoring  # Add this to force routing
+          annotations:
+            summary: "Service {{ $labels.deployment }} is completely down"
+            description: "Deployment {{ $labels.deployment }} in namespace {{ $labels.namespace }} has 0 available replicas for over 1 minute."
+        
+        - alert: ServiceTargetMissing
+          expr: |
+            absent(up{job=~"apigateway|doctorservice|patientservice|appointmentservice"})
+          for: 2m
+          labels:
+            severity: critical
+            team: platform
+            alertnamespace: monitoring  # Add this
+          annotations:
+            summary: "Service scrape target is missing"
+            description: "No scrape targets found for services (apigateway|doctorservice|patientservice|appointmentservice)."
+
+        - alert: PodsNotReady
+          expr: |
+            kube_pod_status_phase{namespace=~"default|your-namespace", pod=~"apigateway.*|doctorservice.*|patientservice.*|appointmentservice.*", phase!="Running"} > 0
+          for: 3m
+          labels:
+            severity: warning
+            team: platform
+            alertnamespace: monitoring  # Add this
+          annotations:
+            summary: "Pod {{ $labels.pod }} not ready"
+            description: "Pod {{ $labels.pod }} has been in {{ $labels.phase }} state for over 3 minutes."

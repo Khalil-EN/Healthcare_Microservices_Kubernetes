@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasource-jaeger
+  namespace: monitoring
+  labels:
+    grafana_datasource: "1"
+data:
+  jaeger-datasource.yaml: |-
+    apiVersion: 1
+    
+    datasources:
+      - name: Jaeger
+        type: jaeger
+        access: proxy
+        url: http://jaeger.tracing.svc.cluster.local:16686
+        isDefault: false
+        version: 1
+        editable: true
+        uid: jaeger

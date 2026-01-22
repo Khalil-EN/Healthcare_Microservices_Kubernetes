@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\Program Files\Kompose\kompose.exe convert
+    kompose.version: 1.36.0 (ae2a39403)
+  labels:
+    io.kompose.service: consul
+  name: consul
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: consul
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\Program Files\Kompose\kompose.exe convert
+        kompose.version: 1.36.0 (ae2a39403)
+      labels:
+        io.kompose.service: consul
+    spec:
+      containers:
+        - image: consul:1.15
+          name: consul
+          ports:
+            - containerPort: 8500
+              protocol: TCP
+            - containerPort: 8600
+              protocol: UDP
+      restartPolicy: Always

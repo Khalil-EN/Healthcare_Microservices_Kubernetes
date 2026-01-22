@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: otel-collector-metrics
+  namespace: tracing
+  labels:
+    app: otel-collector
+  annotations:
+    # Annotation pour que Prometheus scrape automatiquement
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8889"
+    prometheus.io/path: "/metrics"
+spec:
+  selector:
+    app: otel-collector
+  ports:
+    - name: metrics
+      port: 8889
+      targetPort: 8889

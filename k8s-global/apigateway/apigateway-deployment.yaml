@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apigateway
+  labels:
+    app: apigateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apigateway
+  template:
+    metadata:
+      labels:
+        app: apigateway
+    spec:
+      containers:
+        - name: apigateway
+          image: localhost:5000/apigateway
+          ports:
+            - containerPort: 5000
+          env:
+            - name: CONSUL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: consul-config
+                  key: consul-name
+            - name: OTEL_SERVICE_NAME
+              value: apigateway
+
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              valueFrom:
+                  configMapKeyRef:
+                    name: otel-env-config
+                    key: otel-exporter-otlp-endpoint
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+              
+

@@ -1,0 +1,177 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-jaeger-traces
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  jaeger-traces-dashboard.json: |
+    {
+      "title": "Healthcare Microservices - Jaeger Distributed Tracing",
+      "uid": "healthcare-jaeger-traces",
+      "timezone": "browser",
+      "refresh": "30s",
+      "time": {
+        "from": "now-1h",
+        "to": "now"
+      },
+      "links": [
+        {
+          "title": "Open Jaeger UI",
+          "url": "http://localhost:16686",
+          "type": "link",
+          "icon": "external link",
+          "tooltip": "Open full Jaeger UI",
+          "targetBlank": true
+        }
+      ],
+      "panels": [
+        {
+          "type": "text",
+          "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0},
+          "id": 1,
+          "options": {
+            "mode": "markdown",
+            "content": "# 🔍 Jaeger Distributed Tracing\n\n**Note:** Jaeger stores traces, not metrics. For quantitative metrics (request rates, latencies), use the OpenTelemetry dashboard.\n\n**Services Available:**\n- apigateway\n- doctorservice\n- patientservice\n- appointmentservice\n\n**How to use:**\n1. Select a service below\n2. View recent traces\n3. Click on a trace to see the full distributed trace with all spans\n\n**For full Jaeger UI:** [Open Jaeger](http://localhost:16686) (requires port-forward: `kubectl port-forward -n tracing svc/jaeger 16686:16686`)"
+          }
+        },
+        {
+          "datasource": {"type": "jaeger", "uid": "jaeger"},
+          "type": "traces",
+          "gridPos": {"h": 12, "w": 24, "x": 0, "y": 4},
+          "id": 2,
+          "title": "API Gateway Traces",
+          "description": "Recent traces from the API Gateway service - click on a trace to see the full distributed trace",
+          "targets": [
+            {
+              "datasource": {"type": "jaeger", "uid": "jaeger"},
+              "queryType": "search",
+              "service": "apigateway",
+              "limit": 20,
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": {"type": "jaeger", "uid": "jaeger"},
+          "type": "traces",
+          "gridPos": {"h": 12, "w": 12, "x": 0, "y": 16},
+          "id": 3,
+          "title": "Doctor Service Traces",
+          "targets": [
+            {
+              "datasource": {"type": "jaeger", "uid": "jaeger"},
+              "queryType": "search",
+              "service": "doctorservice",
+              "limit": 20,
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": {"type": "jaeger", "uid": "jaeger"},
+          "type": "traces",
+          "gridPos": {"h": 12, "w": 12, "x": 12, "y": 16},
+          "id": 4,
+          "title": "Patient Service Traces",
+          "targets": [
+            {
+              "datasource": {"type": "jaeger", "uid": "jaeger"},
+              "queryType": "search",
+              "service": "patientservice",
+              "limit": 20,
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": {"type": "jaeger", "uid": "jaeger"},
+          "type": "traces",
+          "gridPos": {"h": 12, "w": 24, "x": 0, "y": 28},
+          "id": 5,
+          "title": "Appointment Service Traces",
+          "targets": [
+            {
+              "datasource": {"type": "jaeger", "uid": "jaeger"},
+              "queryType": "search",
+              "service": "appointmentservice",
+              "limit": 20,
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": {"type": "jaeger", "uid": "jaeger"},
+          "type": "traces",
+          "gridPos": {"h": 12, "w": 24, "x": 0, "y": 40},
+          "id": 6,
+          "title": "Slow Traces (>100ms)",
+          "description": "Traces that took more than 100ms - useful for performance investigation",
+          "targets": [
+            {
+              "datasource": {"type": "jaeger", "uid": "jaeger"},
+              "queryType": "search",
+              "service": "apigateway",
+              "minDuration": "100ms",
+              "limit": 20,
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "datasource": {"type": "jaeger", "uid": "jaeger"},
+          "type": "traces",
+          "gridPos": {"h": 12, "w": 24, "x": 0, "y": 52},
+          "id": 7,
+          "title": "Error Traces",
+          "description": "Traces with errors - filter by 'error=true' tag",
+          "targets": [
+            {
+              "datasource": {"type": "jaeger", "uid": "jaeger"},
+              "queryType": "search",
+              "service": "apigateway",
+              "tags": "error=true",
+              "limit": 20,
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "gridPos": {"h": 6, "w": 24, "x": 0, "y": 64},
+          "id": 8,
+          "options": {
+            "mode": "markdown",
+            "content": "## 📊 Understanding Traces\n\n**What you see here:**\n- Each row is a **trace** - a complete request journey through your system\n- Click on a trace to see all **spans** (individual operations)\n- Spans show the hierarchy: API Gateway → Doctor Service → MongoDB\n\n**Common patterns:**\n- **Fast traces (<50ms)**: Efficient operations, good caching\n- **Slow traces (>500ms)**: Database queries, external API calls, or performance issues\n- **Error traces**: Failed operations that need investigation\n\n**Span Types:**\n- `SPAN_KIND_SERVER`: Incoming HTTP requests\n- `SPAN_KIND_CLIENT`: Outgoing HTTP requests\n- `SPAN_KIND_INTERNAL`: Internal operations (middleware, handlers)\n\n**For detailed analysis:**\n- Use the full Jaeger UI for advanced filtering\n- Compare traces to find performance bottlenecks\n- Trace error propagation across services"
+          }
+        }
+      ],
+      "templating": {
+        "list": [
+          {
+            "name": "service",
+            "type": "custom",
+            "query": "apigateway,doctorservice,patientservice,appointmentservice",
+            "multi": false,
+            "includeAll": false,
+            "current": {
+              "text": "apigateway",
+              "value": "apigateway"
+            }
+          },
+          {
+            "name": "min_duration",
+            "type": "custom",
+            "label": "Min Duration",
+            "query": "0ms,50ms,100ms,200ms,500ms,1s,2s",
+            "multi": false,
+            "includeAll": false,
+            "current": {
+              "text": "0ms",
+              "value": "0ms"
+            }
+          }
+        ]
+      }
+    }

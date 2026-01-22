@@ -1,0 +1,218 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-tracing-metrics
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  tracing-metrics-dashboard.json: |
+    {
+      "title": "Healthcare Microservices - OpenTelemetry Tracing",
+      "uid": "healthcare-tracing-metrics",
+      "timezone": "browser",
+      "refresh": "30s",
+      "time": {
+        "from": "now-1h",
+        "to": "now"
+      },
+      "panels": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "custom": {"fillOpacity": 10, "stacking": {"mode": "normal"}}
+            }
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+          "id": 1,
+          "targets": [
+            {
+              "expr": "sum(rate(traces_calls_total[5m])) by (service_name)",
+              "legendFormat": "{{service_name}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Request Rate by Service",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "unit": "ms",
+              "custom": {"fillOpacity": 10}
+            }
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+          "id": 2,
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum(rate(traces_latency_milliseconds_bucket[5m])) by (service_name, le))",
+              "legendFormat": "{{service_name}} p95",
+              "refId": "A"
+            },
+            {
+              "expr": "histogram_quantile(0.99, sum(rate(traces_latency_milliseconds_bucket[5m])) by (service_name, le))",
+              "legendFormat": "{{service_name}} p99",
+              "refId": "B"
+            }
+          ],
+          "title": "Latency (p95/p99) by Service",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "unit": "ms",
+              "custom": {"fillOpacity": 20}
+            }
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+          "id": 3,
+          "targets": [
+            {
+              "expr": "(sum(rate(traces_latency_milliseconds_sum[5m])) by (service_name) / sum(rate(traces_latency_milliseconds_count[5m])) by (service_name))",
+              "legendFormat": "{{service_name}} avg",
+              "refId": "A"
+            }
+          ],
+          "title": "Average Latency by Service",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short"
+            }
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+          "id": 4,
+          "targets": [
+            {
+              "expr": "sum(traces_calls_total) by (service_name)",
+              "legendFormat": "{{service_name}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Total Requests by Service",
+          "type": "piechart"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "custom": {"fillOpacity": 10}
+            }
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+          "id": 5,
+          "targets": [
+            {
+              "expr": "sum(rate(traces_calls_total{http_status_code=\"200\"}[5m])) by (service_name)",
+              "legendFormat": "{{service_name}} - 200",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(rate(traces_calls_total{http_status_code=\"201\"}[5m])) by (service_name)",
+              "legendFormat": "{{service_name}} - 201",
+              "refId": "B"
+            },
+            {
+              "expr": "sum(rate(traces_calls_total{http_status_code=~\"4..\"}[5m])) by (service_name)",
+              "legendFormat": "{{service_name}} - 4xx",
+              "refId": "C"
+            },
+            {
+              "expr": "sum(rate(traces_calls_total{http_status_code=~\"5..\"}[5m])) by (service_name)",
+              "legendFormat": "{{service_name}} - 5xx",
+              "refId": "D"
+            }
+          ],
+          "title": "Requests by Status Code",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "custom": {"fillOpacity": 10, "stacking": {"mode": "normal"}}
+            }
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+          "id": 6,
+          "targets": [
+            {
+              "expr": "sum(rate(traces_calls_total{http_method=~\"GET|POST|PUT|DELETE\"}[5m])) by (http_method)",
+              "legendFormat": "{{http_method}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Requests by HTTP Method",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "custom": {"fillOpacity": 10}
+            }
+          },
+          "gridPos": {"h": 8, "w": 24, "x": 0, "y": 24},
+          "id": 7,
+          "targets": [
+            {
+              "expr": "sum(rate(traces_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[5m])) by (service_name, operation)",
+              "legendFormat": "{{service_name}} - {{operation}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Top Operations by Service",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "unit": "ms",
+              "custom": {"fillOpacity": 10}
+            }
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32},
+          "id": 8,
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.50, sum(rate(traces_latency_milliseconds_bucket{service_name=\"apigateway\"}[5m])) by (operation, le))",
+              "legendFormat": "{{operation}} p50",
+              "refId": "A"
+            },
+            {
+              "expr": "histogram_quantile(0.95, sum(rate(traces_latency_milliseconds_bucket{service_name=\"apigateway\"}[5m])) by (operation, le))",
+              "legendFormat": "{{operation}} p95",
+              "refId": "B"
+            }
+          ],
+          "title": "API Gateway Latency by Operation",
+          "type": "timeseries"
+        }
+      ],
+      "tags": ["traces", "otel", "microservices" ,"prometheus"],
+      "templating": {
+        "list": [
+          {
+            "name": "service",
+            "type": "query",
+            "datasource": {"type": "prometheus", "uid": "prometheus"},
+            "query": "label_values(traces_calls_total, service_name)",
+            "multi": true,
+            "includeAll": true
+          }
+        ]
+      }
+    }

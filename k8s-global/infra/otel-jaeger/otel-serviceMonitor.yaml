@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: otel-collector
+  namespace: monitoring  # ✅ DOIT être dans le namespace monitoring
+  labels:
+    app: otel-collector
+    release: monitoring  # Important: doit correspondre au release de kube-prometheus-stack
+spec:
+  selector:
+    matchLabels:
+      app: otel-collector
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
+  namespaceSelector:
+    matchNames:
+      - tracing  # Ceci indique à Prometheus de scraper le service dans le namespace tracing

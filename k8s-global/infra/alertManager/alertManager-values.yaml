@@ -1,0 +1,28 @@
+alertmanager:
+  config:
+    global:
+      resolve_timeout: 5m
+    
+    route:
+      receiver: 'null'
+      group_by: ['alertname', 'severity', 'deployment']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 12h
+      routes:
+        # Route critical and warning alerts to Discord
+        - matchers:
+            - severity =~ "warning|critical"
+          receiver: discord-critical
+          continue: false
+    
+    receivers:
+      - name: 'discord-critical'
+        webhook_configs:
+          - url: 'http://alertmanager-discord-bridge.monitoring.svc.cluster.local:9094/webhook'
+            send_resolved: true
+      - name: 'null'
+  
+  alertmanagerSpec:
+    alertmanagerConfigSelector: {}
+    alertmanagerConfigNamespaceSelector: {}

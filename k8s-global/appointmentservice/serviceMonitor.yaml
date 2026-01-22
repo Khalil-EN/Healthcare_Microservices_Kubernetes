@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: appointmentservice-monitor
+  labels:
+    release: monitoring  # must match the Helm release name
+spec:
+  selector:
+    matchLabels:
+      app: appointmentservice
+  endpoints:
+    - port: "4001"  # optional if port name is set in the service
+      targetPort: 4001
+      path: /metrics
+      interval: 15s
+  namespaceSelector:
+    matchNames:
+      - default
