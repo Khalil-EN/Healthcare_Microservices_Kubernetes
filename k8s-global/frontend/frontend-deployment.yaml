@@ -21,7 +21,7 @@ spec:
         app: frontend
     spec:
       containers:
-      - image: ghcr.io/YOUR_GITHUB_USERNAME/healthcare_microservices_kubernetes/frontend:main 
+      - image: ghcr.io/Khalil-EN/Healthcare_Microservices_Kubernetes/frontend:sha-
         imagePullPolicy: Always
         name: frontend
         ports:
