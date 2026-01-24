@@ -1,3 +1,5 @@
+console.log("ArgoCD is working properly!")
+
 console.log("Loading tracing...");
 require('./tracing/tracing'); 
 console.log("Tracing loaded successfully");
@@ -145,7 +147,6 @@ app.get('/appointments', async (req, res) => {
   /** DOCTORS **/
   app.get('/doctors', async (req, res) => {
     try {
-      console.log("===================== ArgoCD deployed successfully! ===============");
       const SERVICE_URL = await getServiceURL(DOCTOR_SERVICE);
       const response = await axios.get(`${SERVICE_URL}/doctors`, { params: req.query });
       res.status(response.status).json(response.data);
