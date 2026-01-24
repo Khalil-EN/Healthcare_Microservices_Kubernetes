@@ -51,7 +51,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./apigateway
-          push: ${{ github.event_name != 'pull_request' }}  # Don't push on PRs
+          push: ${{ github.event_name != 'pull_request' }}  
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
@@ -72,7 +72,7 @@ jobs:
           echo "Updating deployment to: ${FULL_IMAGE}"
           
           # Update deployment manifest
-          sed -i "s|image: .*apigateway:.*|image: ${FULL_IMAGE}|g" k8s-global/apigateway/apigateway-deployment.yaml
+          sed -i "s|image: .*apigateway.*|image: ${FULL_IMAGE}|g" k8s-global/apigateway/apigateway-deployment.yaml
           
           # Verify the change
           echo "Updated image line:"

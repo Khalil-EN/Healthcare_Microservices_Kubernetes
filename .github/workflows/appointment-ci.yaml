@@ -85,7 +85,7 @@ jobs:
           echo "Full image name: ${FULL_IMAGE}"
           
           # Update the deployment file
-          sed -i "s|image: ghcr.io/.*/appointmentservice:.*|image: ${FULL_IMAGE}|g" k8s-global/appointmentservice/appointmentservice-deployment.yaml
+          sed -i "s|image: ghcr.io/.*/appointmentservice.*|image: ${FULL_IMAGE}|g" k8s-global/appointmentservice/appointmentservice-deployment.yaml
           
           # Show what changed
           echo "Updated frontend-deployment.yaml:"
