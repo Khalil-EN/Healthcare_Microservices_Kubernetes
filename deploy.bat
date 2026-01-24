@@ -7,10 +7,12 @@ REM =========================
 set PROMETHEUS_PORT=9090
 set GRAFANA_PORT=3001
 set JAEGER_PORT=16686
+set ARGOCD_PORT=8080
 
 set MONITORING_NS=monitoring
 set LOGGING_NS=logging
 set TRACING_NS=tracing
+set ARGOCD_NS=argocd
 
 
 set PROM_RELEASE=monitoring
@@ -64,6 +66,17 @@ timeout /t 65 > nul
 
 
 REM ==================================================
+REM ArgoCD
+REM ==================================================
+echo =====================================
+echo Installing ArgoCD
+echo =====================================
+kubectl create namespace %ARGOCD_NS%
+kubectl apply -n %ARGOCD_NS% -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server -n %ARGOCD_NS% --timeout=300s
+
+
+REM ==================================================
 REM Infrastructure services
 REM ==================================================
 echo =====================================
@@ -96,6 +109,8 @@ kubectl apply -f k8s-global\infra\alertManager\
 echo ---- Ingress ----
 kubectl apply -f k8s-global\infra\ingress\
 
+echo ---- ArgoCD ----
+kubectl apply -f k8s-global\infra\argocd\
 
 echo ---- OpenTelemetry + Jaeger ----
 kubectl create namespace %TRACING_NS%
@@ -156,10 +171,15 @@ REM Jaeger
 start "Jaeger Port Forward" cmd /k ^
 kubectl port-forward -n %TRACING_NS% svc/%JAEGER_RELEASE% %JAEGER_PORT%:16686
 
+REM ArgoCD
+start "ArgoCD Port Forward" cmd /k ^
+kubectl port-forward svc/argocd-server -n %ARGOCD_NS% %ARGOCD_PORT%:443
+
 echo =====================================
 echo Done!
 echo Prometheus: http://localhost:%PROMETHEUS_PORT%
 echo Grafana:    http://localhost:%GRAFANA_PORT%
 echo Jaeger:    http://localhost:%JAEGER_PORT%
+echo ArgoCD:    http://localhost:%ARGOCD_PORT%
 echo Loki:       http://loki.%LOGGING_NS%.svc.cluster.local:3100
 echo =====================================

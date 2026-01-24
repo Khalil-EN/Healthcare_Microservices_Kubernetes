@@ -165,7 +165,6 @@ app.get('/appointments', async (req, res) => {
   
   app.post('/doctors', async (req, res) => {
     try {
-      console.log("I'm here");
       const SERVICE_URL = await getServiceURL(DOCTOR_SERVICE);
       const response = await axios.post(`${SERVICE_URL}/doctors`, req.body);
       res.status(response.status).json(response.data);

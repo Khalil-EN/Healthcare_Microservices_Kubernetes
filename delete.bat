@@ -8,6 +8,7 @@ kubectl delete -f k8s-global\infra\mongo\
 kubectl delete -f k8s-global\infra\otel-jaeger\
 kubectl delete -f k8s-global\infra\alertManager\
 kubectl delete -f k8s-global\infra\ingress\
+kubectl delete -f k8s-global\infra\argocd\
 
 echo Deleting doctorservice...
 kubectl delete -f k8s-global\doctorservice\
