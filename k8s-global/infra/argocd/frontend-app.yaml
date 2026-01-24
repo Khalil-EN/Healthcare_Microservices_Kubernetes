@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/Khalil-EN/Healthcare_Microservices_Kubernetes.git
     targetRevision: main
-    path: base/frontend
+    path: k8s-global/frontend
   
   destination:
     server: https://kubernetes.default.svc

@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/Khalil-EN/Healthcare_Microservices_Kubernetes.git
     targetRevision: main
-    path: argocd/applications
+    path: k8s-global/infra/argocd
   
   destination:
     server: https://kubernetes.default.svc
