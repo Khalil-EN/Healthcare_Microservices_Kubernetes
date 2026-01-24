@@ -26,8 +26,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }} 
-          fetch-depth: 0  
+          fetch-depth: 0
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -46,16 +45,13 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
+            type=sha,format=short
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: ./apigateway
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}  # Don't push on PRs
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
@@ -64,42 +60,31 @@ jobs:
       - name: Update Kubernetes manifests
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          # Debug: Print all tags
-          echo "All tags:"
-          echo "${{ steps.meta.outputs.tags }}"
+          # Get short SHA
+          SHORT_SHA=$(git rev-parse --short HEAD)
           
-          # Get the SHA tag - improved regex
-          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n' | grep 'sha-' | head -n1 | awk -F':' '{print $2}')
-          
-          # Fallback: if no sha- tag found, use the version from metadata
-          if [ -z "$IMAGE_TAG" ]; then
-            IMAGE_TAG="main-$(git rev-parse --short HEAD)"
-          fi
-          
-          echo "Using image tag: ${IMAGE_TAG}"
-          
-          # Convert to lowercase (CRITICAL!)
+          # Convert repository name to lowercase
           REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          FULL_IMAGE="ghcr.io/${REPO_LOWER}/apigateway:${IMAGE_TAG}"
           
-          echo "Full image name: ${FULL_IMAGE}"
+          # Build full image reference
+          FULL_IMAGE="${{ env.REGISTRY }}/${REPO_LOWER}/apigateway:sha-${SHORT_SHA}"
           
-          # Update the deployment file
-          sed -i "s|image: ghcr.io/.*/apigateway:.*|image: ${FULL_IMAGE}|g" k8s-global/apigateway/apigateway-deployment.yaml
+          echo "Updating deployment to: ${FULL_IMAGE}"
           
-          # Show what changed
-          echo "Updated apigateway-deployment.yaml:"
-          cat k8s-global/apigateway/apigateway-deployment.yaml | grep "image:"
+          # Update deployment manifest
+          sed -i "s|image: .*apigateway:.*|image: ${FULL_IMAGE}|g" k8s-global/apigateway/apigateway-deployment.yaml
           
-          # Configure git
+          # Verify the change
+          echo "Updated image line:"
+          grep "image:" k8s-global/apigateway/apigateway-deployment.yaml
+          
+          # Commit and push
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Add and commit
           git add k8s-global/apigateway/apigateway-deployment.yaml
           
           if ! git diff --staged --quiet; then
-            git commit -m "🤖 Update frontend image to ${IMAGE_TAG}"
+            git commit -m "🤖 Update apigateway to sha-${SHORT_SHA}"
             git push
           else
             echo "No changes to commit"
