@@ -88,15 +88,15 @@ jobs:
           sed -i "s|image: ghcr.io/.*/frontend:.*|image: ${FULL_IMAGE}|g" k8s-global/frontend/frontend-deployment.yaml
           
           # Show what changed
-          echo "Updated deployment.yaml:"
-          cat k8s-global/frontend/deployment.yaml | grep "image:"
+          echo "Updated frontend-deployment.yaml:"
+          cat k8s-global/frontend/frontend-deployment.yaml | grep "image:"
           
           # Configure git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
           # Add and commit
-          git add k8s-global/frontend/deployment.yaml
+          git add k8s-global/frontend/frontend-deployment.yaml
           
           if ! git diff --staged --quiet; then
             git commit -m "🤖 Update frontend image to ${IMAGE_TAG}"
