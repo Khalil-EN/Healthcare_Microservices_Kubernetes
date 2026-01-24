@@ -64,14 +64,43 @@ jobs:
       - name: Update Kubernetes manifests
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          # Get the SHA tag
-          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | grep -oP 'sha-\K[a-f0-9]+' | head -n1)
+          # Debug: Print all tags
+          echo "All tags:"
+          echo "${{ steps.meta.outputs.tags }}"
+          
+          # Get the SHA tag - improved regex
+          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n' | grep 'sha-' | head -n1 | awk -F':' '{print $2}')
+          
+          # Fallback: if no sha- tag found, use the version from metadata
+          if [ -z "$IMAGE_TAG" ]; then
+            IMAGE_TAG="main-$(git rev-parse --short HEAD)"
+          fi
+          
+          echo "Using image tag: ${IMAGE_TAG}"
+          
+          # Convert to lowercase (CRITICAL!)
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          FULL_IMAGE="ghcr.io/${REPO_LOWER}/doctorservice:${IMAGE_TAG}"
+          
+          echo "Full image name: ${FULL_IMAGE}"
           
           # Update the deployment file
-          sed -i "s|image: .*doctorservice:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${IMAGE_TAG}|g" k8s-global/doctorservice/doctorservice-deployment.yaml
+          sed -i "s|image: ghcr.io/.*/doctorservice:.*|image: ${FULL_IMAGE}|g" k8s-global/doctorservice/doctorservice-deployment.yaml
           
-          # Commit changes
+          # Show what changed
+          echo "Updated doctorservice-deployment.yaml:"
+          cat k8s-global/doctorservice/doctorservice-deployment.yaml | grep "image:"
+          
+          # Configure git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Add and commit
           git add k8s-global/doctorservice/doctorservice-deployment.yaml
-          git diff --staged --quiet || git commit -m "Update doctorservice image to sha-${IMAGE_TAG}" && git push
+          
+          if ! git diff --staged --quiet; then
+            git commit -m "🤖 Update frontend image to ${IMAGE_TAG}"
+            git push
+          else
+            echo "No changes to commit"
+          fi
